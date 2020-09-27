@@ -11,7 +11,7 @@ public class IdeaListComparator<E extends Comparable<E>> implements Comparator<I
         if (o2 == null) return 1;
         int res = o1.size() - o2.size();
         if (res != 0) return res;
-        for (Pair<E, E> pair : o1.zip(o2)) {
+        for (Pair<E, E> pair : o1.zipWith(o2)) {
             res = pair.first.compareTo(pair.second);
             if (res != 0) return res;
         }

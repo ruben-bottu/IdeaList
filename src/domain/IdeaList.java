@@ -11,7 +11,7 @@ public class IdeaList<E> implements Iterable<E> {
     private IdeaList(Iterable<? extends E> elements) {
         List<E> result = new ArrayList<>();
         elements.forEach(result::add);
-        innerList = List.copyOf(result);
+        innerList = Collections.unmodifiableList(result);
     }
 
     public static <E> IdeaList<E> of(Iterable<? extends E> elements) {
@@ -261,7 +261,7 @@ public class IdeaList<E> implements Iterable<E> {
         return Triplet.of(iterators.first.next(), iterators.second.next(), iterators.third.next());
     }
 
-    public <A, B> IdeaList<Triplet<E, A, B>> zip(Iterable<A> other, Iterable<B> other2) {
+    public <A, B> IdeaList<Triplet<E, A, B>> zipWith(Iterable<A> other, Iterable<B> other2) {
         List<Triplet<E, A, B>> result = new ArrayList<>();
         Triplet<Iterator<E>, Iterator<A>, Iterator<B>> its = Triplet.of(iterator(), other.iterator(), other2.iterator());
         while (allHaveNext(its)) {
@@ -278,7 +278,7 @@ public class IdeaList<E> implements Iterable<E> {
         return Pair.of(iterators.first.next(), iterators.second.next());
     }
 
-    public <A> IdeaList<Pair<E, A>> zip(IdeaList<A> other) {
+    public <A> IdeaList<Pair<E, A>> zipWith(IdeaList<A> other) {
         List<Pair<E, A>> result = new ArrayList<>();
         Pair<Iterator<E>, Iterator<A>> its = Pair.of(iterator(), other.iterator());
         while (allHaveNext(its)) {
@@ -300,7 +300,7 @@ public class IdeaList<E> implements Iterable<E> {
     }
 
     private <R extends Comparable<R>> E extremes(Function<E, R> selector, IntPredicate predicate) {
-        Pair<R, E> result = map(selector).zip(this)
+        Pair<R, E> result = map(selector).zipWith(this)
                 .reduce((acc, cur) -> predicate.test(acc.first.compareTo(cur.first)) ? acc : cur);
         return result.second;
     }
@@ -318,7 +318,7 @@ public class IdeaList<E> implements Iterable<E> {
     }
 
     public <R extends Comparable<R>> IdeaList<E> sortBy(Function<E, R> selector) {
-        List<Pair<R, E>> result = new ArrayList<>(map(selector).zip(this).toList());
+        List<Pair<R, E>> result = new ArrayList<>(map(selector).zipWith(this).toList());
         result.sort(new KeyValueComparator<>());
         return IdeaList.of(result).map(cur -> cur.second);
     }
