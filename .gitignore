@@ -1,0 +1,13 @@
+# Voor IntelliJ projecten:
+.idea/
+out/
+*.iml
+META-INF/
+
+
+# Negeer alle klasses die niet belangrijk zijn voor IdeaList:
+Main.java
+Test.java
+Animal.java
+Dog.java
+Person.java
