@@ -278,7 +278,7 @@ public class IdeaList<E> implements Iterable<E> {
         return Pair.of(iterators.first.next(), iterators.second.next());
     }
 
-    public <A> IdeaList<Pair<E, A>> zipWith(IdeaList<A> other) {
+    public <A> IdeaList<Pair<E, A>> zipWith(Iterable<A> other) {
         List<Pair<E, A>> result = new ArrayList<>();
         Pair<Iterator<E>, Iterator<A>> its = Pair.of(iterator(), other.iterator());
         while (allHaveNext(its)) {
