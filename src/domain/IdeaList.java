@@ -27,6 +27,15 @@ public class IdeaList<E> implements Iterable<E> {
         return IdeaList.of();
     }
 
+    // Added these methods to avoid redundant copy of calculation result lists
+    private IdeaList(List<? extends E> elements) {
+        innerList = Collections.unmodifiableList(elements);
+    }
+
+    private static <E> IdeaList<E> readOnlyList(List<? extends E> elements) {
+        return new IdeaList<>(elements);
+    }
+
 
     // Getters ====================================================================================
     public E get(int index) {
@@ -147,7 +156,7 @@ public class IdeaList<E> implements Iterable<E> {
     private IdeaList<E> create(Consumer<List<E>> transform) {
         List<E> result = new ArrayList<>(innerList);
         transform.accept(result);
-        return IdeaList.of(result);
+        return IdeaList.readOnlyList(result);
     }
 
     public IdeaList<E> insert(int index, Iterable<? extends E> elements) {
@@ -156,7 +165,7 @@ public class IdeaList<E> implements Iterable<E> {
             result.add(index, element);
             index++;
         }
-        return IdeaList.of(result);
+        return IdeaList.readOnlyList(result);
     }
 
     @SafeVarargs
@@ -267,7 +276,7 @@ public class IdeaList<E> implements Iterable<E> {
         while (allHaveNext(its)) {
             result.add(giveNextElements(its));
         }
-        return IdeaList.of(result);
+        return IdeaList.readOnlyList(result);
     }
 
     private <A> boolean allHaveNext(Pair<Iterator<E>, Iterator<A>> iterators) {
@@ -284,7 +293,7 @@ public class IdeaList<E> implements Iterable<E> {
         while (allHaveNext(its)) {
             result.add(giveNextElements(its));
         }
-        return IdeaList.of(result);
+        return IdeaList.readOnlyList(result);
     }
 
     public int count(Predicate<E> predicate) {
@@ -320,7 +329,7 @@ public class IdeaList<E> implements Iterable<E> {
     public <R extends Comparable<R>> IdeaList<E> sortBy(Function<E, R> selector) {
         List<Pair<R, E>> result = new ArrayList<>(map(selector).zipWith(this).toList());
         result.sort(new KeyValueComparator<>());
-        return IdeaList.of(result).map(cur -> cur.second);
+        return IdeaList.readOnlyList(result).map(cur -> cur.second);
     }
 
     public IdeaList<E> unique() {
@@ -346,9 +355,9 @@ public class IdeaList<E> implements Iterable<E> {
 
     // Ranges =========================================================================================
     public static IdeaList<Integer> rangeInclusive(int from, int to) {
-        List<Integer> result = new ArrayList<>();
+        List<Integer> result = new ArrayList<>(-from + to + 1);
         for (int i = from; i <= to; i++) result.add(i);
-        return IdeaList.of(result);
+        return IdeaList.readOnlyList(result);
     }
 
     public static IdeaList<Integer> rangeExclusive(int from, int upTo) {
